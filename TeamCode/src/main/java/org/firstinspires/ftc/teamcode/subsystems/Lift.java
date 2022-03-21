@@ -1,17 +1,20 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-public class Bertha_Lift_Subsys extends SubsystemBase {
+@Config
+public class Lift extends SubsystemBase {
 
-    Motor liftMotor;
+    MotorEx liftMotor;
     Servo eject;
     TouchSensor liftDown;
 
-    public Bertha_Lift_Subsys(Motor lift, Servo eject, TouchSensor liftDown) {
+    public Lift(MotorEx lift, Servo eject, TouchSensor liftDown) {
 
         liftMotor = lift;
         liftMotor.stopMotor(); // Make sure motor is stopped at initialization
@@ -24,16 +27,23 @@ public class Bertha_Lift_Subsys extends SubsystemBase {
         liftDown = liftDown;
     }
 
-    public void homeLift() {
-        if (liftDown.isPressed()) return; // If the lift is already homed, do not continue
+    public void setPID(double kP) {
+        liftMotor.setRunMode(Motor.RunMode.PositionControl);
 
-        eject.setPosition(1); // Move eject servo out of the way
+        liftMotor.setPositionCoefficient(kP);
+    }
 
+    public void resetLift() {
+        liftMotor.stopMotor();
+        liftMotor.encoder.reset();
+    }
 
-        while (true) {
-            if (liftDown.isPressed()) break; // Check if lift is down
+    public void stop() {
+        liftMotor.stopMotor();
+    }
 
-        }
+    public void home() {
+        liftMotor.setTargetPosition(0);
     }
 
 
